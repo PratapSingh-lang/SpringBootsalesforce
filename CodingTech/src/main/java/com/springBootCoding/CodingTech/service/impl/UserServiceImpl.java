@@ -3,7 +3,10 @@ package com.springBootCoding.CodingTech.service.impl;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
+
+import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -15,14 +18,14 @@ import com.springBootCoding.CodingTech.exception.DataNotFoundException;
 import com.springBootCoding.CodingTech.exception.NotFoundException;
 import com.springBootCoding.CodingTech.repo.RoleRepository;
 import com.springBootCoding.CodingTech.repo.UserRepository;
-import com.springBootCoding.CodingTech.service.AuthenticationService;
+import com.springBootCoding.CodingTech.service.UserService;
 
 import lombok.extern.slf4j.Slf4j;
 
 @Service
 @Slf4j
 @Component
-public class AuthenticationServiceImpl implements AuthenticationService{
+public class UserServiceImpl implements UserService{
 
 	@Autowired
 	private UserRepository userRepo;
@@ -50,9 +53,8 @@ public class AuthenticationServiceImpl implements AuthenticationService{
 			roleSet.forEach(roles -> {
 				Role role = new Role();
 				role.setId(roles.getId());
-				role.setDescription(role.getDescription());
-				role.setName(role.getName());
-				role.setStatus(role.getStatus());
+				role.setDescription(roles.getDescription());
+				role.setName(roles.getName());
 				roleList.add(role);
 			});
 		}
@@ -80,6 +82,27 @@ public class AuthenticationServiceImpl implements AuthenticationService{
 		user.setRole(Roles);
 		userRepo.save(user);
 		return getUserRoleByUserId(user.getId());
+	}
+
+	@Override
+	public User createUser(@Valid User user) {
+		
+		@Valid
+		User savedUser = userRepo.saveAndFlush(user);
+		return savedUser;
+	}
+
+	@Override
+	public User deleteUser(User user) {
+		
+		Optional<User> findById = userRepo.findById(user.getId());
+		if(findById != null) {
+			
+			User existedUser = findById.get();
+			existedUser.getRole().clear();
+			userRepo.delete(existedUser);
+		}
+		return findById.get();
 	}
 
 }

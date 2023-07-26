@@ -44,7 +44,6 @@ public class Role {
 	@NotNull
 	private String description;
 
-	private String status;
 
 
 	@ManyToMany(mappedBy = "role", fetch = FetchType.LAZY)

@@ -29,7 +29,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.Builder.Default;
 
-
 @Entity
 @Data
 @Builder
@@ -38,28 +37,30 @@ import lombok.Builder.Default;
 @Table(name = "users")
 public class User {
 
-		
-		@Id
-		@GeneratedValue(strategy = GenerationType.IDENTITY)
-		private Long id;
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Long id;
 
+	@Column(unique = true, nullable = false)
+	private String email;
 
-		@Column(unique = true, nullable = false)
-		private String email;
-		
-		@NotNull
-		private String password;
+	@NotNull
+	private String password;
 
-		@OneToMany(mappedBy = "user")
-		private List<Token> tokens;
-
-		@ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.PERSIST)
-		@Fetch(FetchMode.SUBSELECT)
-		@JoinTable(name = "USER_ROLE_TABLE", joinColumns = {
-				@JoinColumn(name = "user_id", referencedColumnName = "id") }, inverseJoinColumns = {
-						@JoinColumn(name = "role_id", referencedColumnName = "id") })
-		private Set<Role> role;
-		
+	@OneToMany(mappedBy = "user", fetch = FetchType.EAGER)
+	private List<Token> tokens;
 
 	
+	
+//	@ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+//	@Fetch(FetchMode.SUBSELECT)
+//	
+//	@JoinTable(name = "USER_ROLE_TABLE", joinColumns = {
+//			@JoinColumn(name = "user_id", referencedColumnName = "id") }, inverseJoinColumns = {
+//	@JoinColumn(name = "role_id", referencedColumnName = "id") })
+//	
+	@ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+	@JoinTable(name = "USER_ROLE_TABLE", joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"), inverseJoinColumns = @JoinColumn(name = "role_id", referencedColumnName = "id"))
+	private Set<Role> role;
+
 }
