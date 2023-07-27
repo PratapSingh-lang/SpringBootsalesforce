@@ -16,7 +16,6 @@ import lombok.NoArgsConstructor;
 public class RegisterRequest {
 
 	private long id;
-	private String title;
 //    @Email
 	private String email;
 	@NotEmpty

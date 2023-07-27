@@ -34,7 +34,6 @@ import lombok.extern.slf4j.Slf4j;
 @RestController
 @Slf4j
 @RequiredArgsConstructor
-@CrossOrigin("*")
 public class RoleController {
 
 	private final RoleService roleService;
@@ -54,7 +53,7 @@ public class RoleController {
 	    @ApiResponse(code = 403, message = "Access forbidden. Only Admin users can create roles."),
 	    @ApiResponse(code = 500, message = "Internal server error")
 	})
-	@PostMapping("/createrole")
+	@PostMapping("/createRole")
 	// @Secured("createrole") // Uncomment this line to enable role-based access control
 	public ResponseEntity<?> createRole(@Valid @RequestBody Role role) {
 	    try {
@@ -94,7 +93,7 @@ public class RoleController {
 	    @ApiResponse(code = 404, message = "Role not found in the system"),
 	    @ApiResponse(code = 500, message = "Internal server error")
 	})
-	@PutMapping("/updaterole")
+	@PutMapping("/updateRole")
 	// @Secured("updaterole") // Uncomment this line to enable role-based access control
 	public ResponseEntity<?> updateRole(@Valid @RequestBody Role role) {
 	    try {
@@ -135,7 +134,7 @@ public class RoleController {
 	    @ApiResponse(code = 404, message = "User not found with the provided user ID"),
 	    @ApiResponse(code = 500, message = "Internal server error")
 	})
-	@PostMapping("/addlistofroletouser")
+	@PostMapping("/addListOfRoleToUser")
 	// @Secured("addlistofroletouser") // Uncomment this line to enable role-based access control
 	public ResponseEntity<?> addListOfRoleToUser(@RequestBody List<Long> roleId, @RequestParam("id") long userId) {
 	    try {
@@ -173,7 +172,7 @@ public class RoleController {
 	    @ApiResponse(code = 200, message = "All available roles fetched successfully"),
 	    @ApiResponse(code = 500, message = "Internal server error")
 	})
-	@PostMapping("/getallavailableroles")
+	@PostMapping("/getAllAvailableRoles")
 	// @Secured("getallavailableroles") // Uncomment this line to enable role-based access control
 	public ResponseEntity<?> getAllAvailableRoles() {
 	    try {
@@ -206,7 +205,7 @@ public class RoleController {
 	    @ApiResponse(code = 404, message = "Role not found in the system"),
 	    @ApiResponse(code = 500, message = "Internal server error")
 	})
-	@DeleteMapping("/deleterole")
+	@DeleteMapping("/deleteRole")
 	// @Secured("deleterole") // Uncomment this line to enable role-based access control
 	public ResponseEntity<?> deleteRole(@RequestBody Role role) {
 	    try {

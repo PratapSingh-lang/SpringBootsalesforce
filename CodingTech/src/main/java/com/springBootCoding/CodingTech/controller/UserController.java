@@ -11,6 +11,7 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -23,6 +24,8 @@ import com.springBootCoding.CodingTech.repo.UserRepository;
 import com.springBootCoding.CodingTech.service.UserService;
 
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import io.swagger.annotations.ApiResponse;
@@ -53,6 +56,9 @@ public class UserController {
 	 * @return ResponseEntity containing the added role and an OK response status
 	 */
 	@ApiOperation(value = "Create a new role by Admin", notes = "Adds a new role to the system. Only Admin users can access this API.")
+	@ApiImplicitParams({
+        @ApiImplicitParam(name = "Authorization", value = "Bearer <token>", required = true, dataType = "string", paramType = "header")
+    })
 	@ApiResponses(value = {
 	    @ApiResponse(code = 201, message = "User created successfully"),
 	    @ApiResponse(code = 400, message = "Invalid role data provided"),

@@ -13,10 +13,12 @@ import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
 import com.springBootCoding.CodingTech.entity.Role;
+import com.springBootCoding.CodingTech.entity.Token;
 import com.springBootCoding.CodingTech.entity.User;
 import com.springBootCoding.CodingTech.exception.DataNotFoundException;
 import com.springBootCoding.CodingTech.exception.NotFoundException;
 import com.springBootCoding.CodingTech.repo.RoleRepository;
+import com.springBootCoding.CodingTech.repo.TokenRepository;
 import com.springBootCoding.CodingTech.repo.UserRepository;
 import com.springBootCoding.CodingTech.service.UserService;
 
@@ -31,7 +33,8 @@ public class UserServiceImpl implements UserService{
 	private UserRepository userRepo;
 	@Autowired
 	private RoleRepository roleRepository;
-	
+	@Autowired
+	private  TokenRepository tokenRepository;
 	@Override
 	public List<User> getAllUsersData() {
 		List<User> usersList = userRepo.findAll();
@@ -100,6 +103,10 @@ public class UserServiceImpl implements UserService{
 			
 			User existedUser = findById.get();
 			existedUser.getRole().clear();
+			List<Token> tokens = existedUser.getTokens();
+			if (tokens.size() > 0)
+				tokenRepository.deleteAllInBatch(tokens);
+			existedUser.getTokens().clear();
 			userRepo.delete(existedUser);
 		}
 		return findById.get();
