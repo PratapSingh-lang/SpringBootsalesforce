@@ -33,7 +33,7 @@ public class LogoutService implements LogoutHandler  {
 	    var storedToken = tokenRepository.findByToken(jwt)
 	        .orElse(null);
 	    if (storedToken != null) {
-	    	log.info("Tocken Expired");
+	    	log.info("Token Expired");
 	      storedToken.setExpired(true);
 	      log.info("Tocken Revoked");
 	      storedToken.setRevoked(true);

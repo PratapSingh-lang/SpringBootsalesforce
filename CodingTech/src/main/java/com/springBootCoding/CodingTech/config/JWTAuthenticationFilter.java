@@ -66,10 +66,6 @@ public class JWTAuthenticationFilter extends OncePerRequestFilter {
 	@Override
 	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
 			throws ServletException, IOException {
-		// TODO Auto-generated method stub
-
-//		String jwt = parseJwt(request);
-//		logger.info("Token === "+jwt);
 	
 		final Logger log = LoggerFactory.getLogger(JWTAuthenticationFilter.class);
 
@@ -77,7 +73,6 @@ public class JWTAuthenticationFilter extends OncePerRequestFilter {
 		final String authHeader = request.getHeader("Authorization");
 		final String jwtToken;
 		final String email;
-		String privilegeName;
 		boolean isTokenValid = false;
 		request.getHeader("Bearer");
 		if (authHeader == null || !authHeader.startsWith("Bearer ")
@@ -89,12 +84,6 @@ public class JWTAuthenticationFilter extends OncePerRequestFilter {
 		log.info("Request  Uri is : {}", request.getRequestURI());
 		log.info("Request ServletPath equals : {}",  request.getServletPath());
 		log.info("value of authHeader is : {}", authHeader);
-		String calledAPiPath = request.getHeader("CalledAPi");
-		if (calledAPiPath == null)
-			privilegeName = request.getServletPath();
-		else {
-			privilegeName = calledAPiPath;
-		}
 		jwtToken = authHeader.substring(7);
 		if (jwtToken != null) {
 			try {
@@ -102,32 +91,9 @@ public class JWTAuthenticationFilter extends OncePerRequestFilter {
 				log.info("Username from token is  : {}", email);
 				if (email != null && SecurityContextHolder.getContext().getAuthentication() == null) {
 					UserDetails userDetails = userDetailsService.loadUserByUsername(email);
-					User user2 = userRepository.findByEmail(email).get();
-					Token token = tokenRepository.findByToken(jwtToken).get();
 					isTokenValid = tokenRepository.findByToken(jwtToken).map(t -> !t.isExpired() && !t.isRevoked())
 							.orElse(false);
-					log.info("token revoked status : {}", isTokenValid);
-
-					User user = userRepository.findByUsernameWithRoles(email).get();
-					Set<Role> roles = user.getRole();
-					boolean roleName = false;
-					for(Role role : roles) {
-						if(role.getName().equals("SUPERADMIN")) {
-							roleName = true;
-						}
-					}
-					
-//					if (isTokenValid) {
-//						if (!roleName) {
-//							response.setHeader("error", "user don't have access to this api");
-//							Map<String, String> error = new HashMap<>();
-//							error.put("error_message", "user don't have access to this api");
-//							response.setContentType(MimeTypeUtils.APPLICATION_JSON_VALUE);
-//							new ObjectMapper().writeValue(response.getOutputStream(), error);
-//							throw new RuntimeException("user don't have access to this api");
-//						}
-//					}
-
+					log.info("Token validity status  : {}", isTokenValid);
 					if (jwtService.isTokenValid(jwtToken, userDetails) && isTokenValid) {
 						UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
 								userDetails, null, userDetails.getAuthorities());
@@ -144,35 +110,17 @@ public class JWTAuthenticationFilter extends OncePerRequestFilter {
 				}
 			} catch (ExpiredJwtException e) {
 				log.error(e.getMessage());
-				// e.printStackTrace();
 				Claims claims = e.getClaims();
-				System.out.println("Token Expired " + String.valueOf(claims.get(
-//							authConstants.JWT_CLAIM_USERNAME
+				log.error("Token Expired " + String.valueOf(claims.get(
 						"userName")));
 				response.setHeader("error", e.getMessage());
 				Map<String, String> error = new HashMap<>();
 				error.put("error_message", e.getMessage());
 				response.setContentType(MimeTypeUtils.APPLICATION_JSON_VALUE);
 				new ObjectMapper().writeValue(response.getOutputStream(), error);
-
-//       		 response.setStatus(HttpServletResponse.SC_NOT_ACCEPTABLE);
-////       		 return new ResponseEntity<>(
-//       				 throw new RuntimeException("token expired");
-//           			 , HttpStatus.NOT_FOUND);
-//				response.set
-//				try {
-//
-//					logger.info("inside try block");
-////						response = verifyRefreshToken(request, response, claims);
-//				} catch (Exception e1) {
-//					// TODO Auto-generated catch block
-//					// e1.printStackTrace();
-//					
-//				}
 			} catch (Exception e) {
 
 				logger.error("JWT claims string is empty: {}", e.getMessage());
-				// throw new AuthenticationServiceException("Authentication failed");
 				response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
 			}
 			filterChain.doFilter(request, response);

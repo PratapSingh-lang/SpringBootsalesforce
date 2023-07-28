@@ -11,6 +11,8 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.annotation.Secured;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -40,6 +42,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @RestController
 @Slf4j
+@Secured("ADMIN")
 public class UserController {
 
 	@Autowired
@@ -52,8 +55,8 @@ public class UserController {
 	 *
 	 * This method adds a new role to the system. Only Admin users can access this API.
 	 *
-	 * @param role The Role object representing the new role to be added
-	 * @return ResponseEntity containing the added role and an OK response status
+	 * @param user The User object representing the new user to be added
+	 * @return ResponseEntity containing the added user and an OK response status
 	 */
 	@ApiOperation(value = "Create a new role by Admin", notes = "Adds a new role to the system. Only Admin users can access this API.")
 	@ApiImplicitParams({
@@ -66,7 +69,6 @@ public class UserController {
 	    @ApiResponse(code = 500, message = "Internal server error")
 	})
 	@PostMapping("/createUser")
-	// @Secured("createrole") // Uncomment this line to enable role-based access control
 	public ResponseEntity<?> createUser(@Valid @RequestBody User user) {
 	    try {
 	        // Attempt to add the new role
@@ -93,7 +95,7 @@ public class UserController {
 	 *
 	 * @return ResponseEntity containing the list of users fetched successfully
 	 */
-	@ApiOperation(value = "Fetch a list of all users", notes = "Returns a list of all users from the database")
+	@ApiOperation(value = "Fetch a list of all users", notes = "Returns a list of all users from the database. Only Admin users can access this API.")
 	@ApiResponses(value = { @ApiResponse(code = 200, message = "Users fetched successfully"),
 			@ApiResponse(code = 404, message = "No users found in the database") })
 	@PostMapping("/getallusers")
@@ -112,7 +114,7 @@ public class UserController {
 	 * @return ResponseEntity containing the user's role fetched successfully or a
 	 *         NOT_FOUND response if the user is not found
 	 */
-	@ApiOperation(value = "Fetch the role of a user by their user ID", notes = "Returns the role assigned to a user based on their user ID")
+	@ApiOperation(value = "Fetch the role of a user by their user ID", notes = "Returns the role assigned to a user based on their user ID. Only Admin users can access this API.")
 	@ApiResponses(value = { @ApiResponse(code = 200, message = "User's role fetched successfully"),
 			@ApiResponse(code = 404, message = "User not found or user's role not found") })
 	@PostMapping("/getuserrole")
@@ -138,7 +140,7 @@ public class UserController {
 	 * @return ResponseEntity containing the updated role(s) of the user or a
 	 *         NOT_FOUND response if the user is not found
 	 */
-	@ApiOperation(value = "Update the role(s) of a user by their user ID", notes = "Updates the role(s) assigned to a user based on their user ID")
+	@ApiOperation(value = "Update the role(s) of a user by their user ID", notes = "Updates the role(s) assigned to a user based on their user ID. Only Admin users can access this API.")
 	@ApiResponses(value = { @ApiResponse(code = 200, message = "User's role(s) updated successfully"),
 			@ApiResponse(code = 400, message = "Invalid user ID or role ID(s) provided"),
 			@ApiResponse(code = 404, message = "User not found with the provided user ID") })
@@ -178,7 +180,6 @@ public class UserController {
 	    @ApiResponse(code = 500, message = "Internal server error")
 	})
 	@DeleteMapping("/deleteUser")
-	// @Secured("deleterole") // Uncomment this line to enable role-based access control
 	public ResponseEntity<?> deleteRole(@RequestBody User user) {
 	    try {
 	        // Attempt to delete the role

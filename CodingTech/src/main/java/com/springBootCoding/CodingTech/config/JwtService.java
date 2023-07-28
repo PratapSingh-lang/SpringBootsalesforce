@@ -21,6 +21,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
+import com.springBootCoding.CodingTech.constants.VariableConstants;
 import com.springBootCoding.CodingTech.entity.CustomUserDetails;
 import com.springBootCoding.CodingTech.entity.User;
 import com.springBootCoding.CodingTech.repo.UserRepository;
@@ -28,7 +29,6 @@ import com.springBootCoding.CodingTech.repo.UserRepository;
 @Slf4j
 @Service
 public class JwtService {
-	private static final String SECRET_KEY = "50655368566D597133743677397A24432646294A404E635166546A576E5A7234";
 
 	@Autowired
 	UserRepository userRepository;
@@ -100,7 +100,7 @@ public class JwtService {
 
 	private Key getSignInKey() {
 		log.info("getting sign in key");
-		byte[] keyBytes = Decoders.BASE64.decode(SECRET_KEY);
+		byte[] keyBytes = Decoders.BASE64.decode(VariableConstants.SECRET_KEY);
 		return Keys.hmacShaKeyFor(keyBytes);
 	}
 

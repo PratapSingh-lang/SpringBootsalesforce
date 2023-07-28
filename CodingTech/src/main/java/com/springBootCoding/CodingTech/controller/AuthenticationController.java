@@ -37,6 +37,12 @@ import com.springBootCoding.CodingTech.exception.DataNotFoundException;
 import com.springBootCoding.CodingTech.repo.TokenRepository;
 import com.springBootCoding.CodingTech.service.AuthenticationService;
 
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
+import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.ApiResponses;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -55,19 +61,27 @@ public class AuthenticationController {
 
 	private final AuthenticationService authenticationService;
 	private final JwtService jwtService;
-	private final TokenRepository tokenRepository;
 	
 	
 	/**
-	 * Desc : refereshToken this function is refresh the jwt token InputParam :
-	 * request,response
-	 * 
-	 * @return
-	 * @throws StreamWriteException
-	 * @throws DatabindException
-	 * @throws IOException
+	 * Refreshes the JWT token.
+	 *
+	 * This method refreshes the JWT token for the user.
+	 *
+	 * @param request The HttpServletRequest object representing the request
+	 * @param response The HttpServletResponse object representing the response
+	 * @return ResponseEntity containing the new JWT token and the refresh token with an OK response status
+	 * @throws StreamWriteException if there is an issue with writing the response stream
+	 * @throws DatabindException if there is an issue with data binding
+	 * @throws IOException if an I/O exception occurs
 	 */
-	@PostMapping("/refereshtoken")
+	@ApiOperation(value = "Refresh JWT token", notes = "Refreshes the JWT token for the user.")
+	@ApiResponses(value = {
+	    @ApiResponse(code = 200, message = "JWT token refreshed successfully"),
+	    @ApiResponse(code = 400, message = "Invalid customer data provided"),
+	    @ApiResponse(code = 500, message = "Internal server error")
+	})
+	@PostMapping("/refereshToken")
 	public ResponseEntity<?> refereshToken(HttpServletRequest request, HttpServletResponse response)
 			throws StreamWriteException, DatabindException, IOException {
 		log.info("refreshing token method called");
@@ -106,19 +120,21 @@ public class AuthenticationController {
 	
 	
 	/**
-	 * Desc : registerIndivisualuser this function is register the individual user
-	 * InpuParam : request
-	 * 
-	 * @return
-	 * @throws RestClientException
-	 * @throws KeyManagementException
-	 * @throws NoSuchAlgorithmException
-	 * @throws KeyStoreException
-	 * @throws CertificateException
-	 * @throws MalformedURLException
-	 * @throws IOException
+	 * Registers an user with USER role.
+	 *
+	 * This method registers a new individual user in the system.
+	 *
+	 * @param request The RegisterRequest object representing the user's registration details
+	 * @return ResponseEntity containing the registered user's details with a CREATED response status
+	 * @throws IOException if an I/O exception occurs
 	 */
-	@PostMapping("/registerUser")
+	@ApiOperation(value = "Register individual user", notes = "Registers a new user in the system with USER role.")
+	@ApiResponses(value = {
+	    @ApiResponse(code = 201, message = "User registered successfully"),
+	    @ApiResponse(code = 400, message = "Invalid user data provided"),
+	    @ApiResponse(code = 500, message = "Internal server error")
+	})
+	@PostMapping("/registerAsUser")
 	public ResponseEntity<?> registerUser(@Valid @RequestBody RegisterRequest request)
 			throws  IOException {
 		log.info("register individual user method called");
@@ -147,13 +163,22 @@ public class AuthenticationController {
 	}
 	
 	/**
-	 * Desc : registerSuperadmin this function is register the super admin InpuParam
-	 * : request
-	 * 
-	 * @return
+	 * Registers a user with admin role.
+	 *
+	 * This method registers a new user with admin role in the system.
+	 *
+	 * @param request The RegisterRequest object representing the user's registration details
+	 * @return ResponseEntity containing the registered user's details with a CREATED response status
+	 * @throws MethodArgumentNotValidException if there is an issue with method arguments validation
 	 */
-	@PostMapping("/registerAdmin")
-	public ResponseEntity<?> registeAdmin(@Valid @RequestBody RegisterRequest request) throws MethodArgumentNotValidException
+	@ApiOperation(value = "Register admin user", notes = "Registers a new user with admin role in the system with ADMIN role.")
+	@ApiResponses(value = {
+	    @ApiResponse(code = 201, message = "Admin user registered successfully"),
+	    @ApiResponse(code = 400, message = "Invalid user data provided"),
+	    @ApiResponse(code = 500, message = "Internal server error")
+	})
+	@PostMapping("/registerAsAdmin")
+	public ResponseEntity<?> registerAdmin(@Valid @RequestBody RegisterRequest request) throws MethodArgumentNotValidException
 	{
 		log.info("resgister super admin method called");
 		
@@ -177,6 +202,22 @@ public class AuthenticationController {
 		
 	}
 	
+	
+	/**
+	 * Authenticates the user with provided credentials.
+	 *
+	 * This method authenticates the user using the provided authentication request.
+	 *
+	 * @param request The AuthenticationRequest object representing the user's authentication details
+	 * @param httpServletResponse The HttpServletResponse object representing the response
+	 * @param httpServletRequest The HttpServletRequest object representing the request
+	 * @return ResponseEntity containing the authentication result with an OK response status
+	 */
+	@ApiOperation(value = "Authenticate user", notes = "Authenticates the user with provided credentials.")
+	@ApiResponses(value = {
+	    @ApiResponse(code = 200, message = "User authenticated successfully"),
+	    @ApiResponse(code = 500, message = "Internal server error")
+	})
 	@PostMapping("/authenticate")
 	public ResponseEntity<?> authenticate(@RequestBody AuthenticationRequest request,
 			HttpServletResponse httpServletResponse, HttpServletRequest httpServletRequest) {

@@ -13,8 +13,8 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-
 import com.springBootCoding.CodingTech.config.JwtService;
+import com.springBootCoding.CodingTech.constants.VariableConstants;
 import com.springBootCoding.CodingTech.dto.AuthenticationRequest;
 import com.springBootCoding.CodingTech.dto.AuthenticationResponse;
 import com.springBootCoding.CodingTech.dto.RegisterRequest;
@@ -34,36 +34,28 @@ import lombok.extern.slf4j.Slf4j;
 @Service
 @RequiredArgsConstructor
 @Slf4j
-public class AuthenticationServiceImpl implements AuthenticationService{
+public class AuthenticationServiceImpl implements AuthenticationService {
 
-//	private final BCryptPasswordEncoder passwordEncoder;
 	private final PasswordEncoder passwordEncoder;
 	private final UserRepository userRepo;
 	private final RoleRepository roleRepository;
 	private final JwtService jwtService;
 	private final TokenRepository tokenRepository;
 	private final AuthenticationManager authManager;
-	
-	private static final String ADMIN_ROLE = "ADMIN";
-	private static final String USER_ROLE = "USER";
-	private static final String ADMIN_ROLE_DESCRIPTION = "This is Admin role";
-	private static final String USER_ROLE_DESCRIPTION = "This is User role";
-	
-	
-	
+
 	@Override
 	public AuthenticationResponse registerAdmin(@Valid RegisterRequest request) throws DataNotFoundException {
 
-		log.info(" Email during registration is : " + request.getEmail() );
+		log.info(" Email during registration is : " + request.getEmail());
 		User user = buildUserObject(request);
 		User savedUser = userRepo.save(user);
-		Role findByRoleName = roleRepository.findByName(ADMIN_ROLE);
+		Role findByRoleName = roleRepository.findByName(VariableConstants.ADMIN_ROLE);
 		User addedRoleToUser;
 		if (findByRoleName == null) {
 			Role role = new Role();
-			role.setName(ADMIN_ROLE);
-			role.setDescription(ADMIN_ROLE_DESCRIPTION);
-			
+			role.setName(VariableConstants.ADMIN_ROLE);
+			role.setDescription(VariableConstants.ADMIN_ROLE_DESCRIPTION);
+
 			Role savedRole = roleRepository.save(role);
 			List<Long> roleId = new ArrayList<>();
 			roleId.add(savedRole.getId());
@@ -76,12 +68,10 @@ public class AuthenticationServiceImpl implements AuthenticationService{
 		String jwtToken = jwtService.generateToken(addedRoleToUser);
 		String referesh_token = jwtService.generateRefershToken(addedRoleToUser);
 		saveUserToken(addedRoleToUser, jwtToken);
-		User user2 = userRepo.findByEmail(addedRoleToUser.getEmail()).orElse(null);
-		List<Token> findAllValidTokenByUser = tokenRepository.findAllValidTokenByUser(addedRoleToUser.getId());
 
 		return AuthenticationResponse.builder().token(jwtToken).user(addedRoleToUser).referesh_token(referesh_token)
 				.build();
-		
+
 	}
 
 	private void saveUserToken(User user, String jwtToken) {
@@ -90,7 +80,9 @@ public class AuthenticationServiceImpl implements AuthenticationService{
 		var token = Token.builder().user(user).token(jwtToken).tokenType(TokenType.BEARER).expired(false).revoked(false)
 				.build();
 		System.out.println("value of token is ::: " + token.toString());
-		tokenRepository.save(token);
+		Token savedToken = tokenRepository.save(token);
+		log.info("Saved token id is : {}", savedToken.getId());
+		log.info("jwt token is : {}", savedToken.getToken());
 	}
 
 	private User addListOfRoleToUser(Long userId, List<Long> roleId) throws DataNotFoundException {
@@ -121,22 +113,20 @@ public class AuthenticationServiceImpl implements AuthenticationService{
 		}
 		User savedUser = userRepo.save(user);
 		return savedUser;
-		
+
 	}
 
 	private User buildUserObject(@Valid RegisterRequest request) {
 
-		User user = User.builder()
-				.email(request.getEmail())
-				.password(passwordEncoder.encode(request.getPassword()))
+		User user = User.builder().email(request.getEmail()).password(passwordEncoder.encode(request.getPassword()))
 				.build();
 		return user;
-		
+
 	}
 
 	@Override
 	public String generateNewAccessToken(String email) {
-		
+
 		log.info("generating new access token");
 		User user = userRepo.findByEmail(email).orElseThrow();
 		String jwtToken = jwtService.generateToken(user);
@@ -145,7 +135,7 @@ public class AuthenticationServiceImpl implements AuthenticationService{
 		saveUserToken(user, jwtToken);
 
 		return jwtToken;
-		
+
 	}
 
 	private void revokeAllUserTokens(User user) {
@@ -159,22 +149,22 @@ public class AuthenticationServiceImpl implements AuthenticationService{
 			token.setRevoked(true);
 		});
 		tokenRepository.saveAll(validUserTokens);
-		
+
 	}
 
 	@Override
 	public AuthenticationResponse registerUser(@Valid RegisterRequest request) throws DataNotFoundException {
 
-		log.info(" Email during registration is : " + request.getEmail() );
+		log.info(" Email during registration is : " + request.getEmail());
 		User user = buildUserObject(request);
 		User savedUser = userRepo.save(user);
-		Role findByRoleName = roleRepository.findByName(USER_ROLE);
+		Role findByRoleName = roleRepository.findByName(VariableConstants.USER_ROLE);
 		User addedRoleToUser;
 		if (findByRoleName == null) {
 			Role role = new Role();
-			role.setName(USER_ROLE);
-			role.setDescription(USER_ROLE_DESCRIPTION);
-			
+			role.setName(VariableConstants.USER_ROLE);
+			role.setDescription(VariableConstants.USER_ROLE_DESCRIPTION);
+
 			Role savedRole = roleRepository.save(role);
 			List<Long> roleId = new ArrayList<>();
 			roleId.add(savedRole.getId());
@@ -187,31 +177,26 @@ public class AuthenticationServiceImpl implements AuthenticationService{
 		String jwtToken = jwtService.generateToken(addedRoleToUser);
 		String referesh_token = jwtService.generateRefershToken(addedRoleToUser);
 		saveUserToken(addedRoleToUser, jwtToken);
-		User user2 = userRepo.findByEmail(addedRoleToUser.getEmail()).orElse(null);
-		List<Token> findAllValidTokenByUser = tokenRepository.findAllValidTokenByUser(addedRoleToUser.getId());
 
 		return AuthenticationResponse.builder().token(jwtToken).user(addedRoleToUser).referesh_token(referesh_token)
 				.build();
-		
-		
+
 	}
 
 	@Override
 	public AuthenticationResponse authenticate(AuthenticationRequest request) {
-		
+
 		log.info("Email during sign in is : " + request.getEmail());
-		
-		authManager.authenticate(new UsernamePasswordAuthenticationToken(request.getEmail()
-									, request.getPassword()));
+
+		authManager.authenticate(new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword()));
 		User user = userRepo.findByEmail(request.getEmail()).orElseThrow();
 		String jwtToken = jwtService.generateToken(user);
 		String referesh_token = jwtService.generateRefershToken(user);
 		revokeAllUserTokens(user);
 		saveUserToken(user, jwtToken);
 
-		
 		return AuthenticationResponse.builder().token(jwtToken).user(user).referesh_token(referesh_token).build();
-		
+
 	}
 
 }

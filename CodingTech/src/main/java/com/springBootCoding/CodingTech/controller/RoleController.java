@@ -9,6 +9,8 @@ import javax.validation.Valid;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.annotation.Secured;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -54,7 +56,7 @@ public class RoleController {
 	    @ApiResponse(code = 500, message = "Internal server error")
 	})
 	@PostMapping("/createRole")
-	// @Secured("createrole") // Uncomment this line to enable role-based access control
+    @Secured({"ADMIN"})
 	public ResponseEntity<?> createRole(@Valid @RequestBody Role role) {
 	    try {
 	        // Attempt to add the new role
@@ -94,7 +96,7 @@ public class RoleController {
 	    @ApiResponse(code = 500, message = "Internal server error")
 	})
 	@PutMapping("/updateRole")
-	// @Secured("updaterole") // Uncomment this line to enable role-based access control
+	@Secured({"ADMIN"})
 	public ResponseEntity<?> updateRole(@Valid @RequestBody Role role) {
 	    try {
 	        // Attempt to update the existing role
@@ -127,7 +129,7 @@ public class RoleController {
 	 * @param userId The ID of the user to whom roles are to be added
 	 * @return ResponseEntity containing the updated user with the added roles and an OK response status
 	 */
-	@ApiOperation(value = "Add a list of roles to a user", notes = "Assigns a list of roles to a user based on their user ID and the provided role IDs.")
+	@ApiOperation(value = "Add a list of roles to a user", notes = "Assigns a list of roles to a user based on their user ID and the provided role IDs. Only Admin users can access this API.")
 	@ApiResponses(value = {
 	    @ApiResponse(code = 200, message = "Roles added to the user successfully"),
 	    @ApiResponse(code = 400, message = "Invalid user ID or role ID(s) provided"),
@@ -135,7 +137,7 @@ public class RoleController {
 	    @ApiResponse(code = 500, message = "Internal server error")
 	})
 	@PostMapping("/addListOfRoleToUser")
-	// @Secured("addlistofroletouser") // Uncomment this line to enable role-based access control
+	@Secured({"ADMIN"})
 	public ResponseEntity<?> addListOfRoleToUser(@RequestBody List<Long> roleId, @RequestParam("id") long userId) {
 	    try {
 	        // Attempt to add the list of roles to the user
@@ -167,13 +169,13 @@ public class RoleController {
 	 *
 	 * @return ResponseEntity containing the list of all available roles and an OK response status
 	 */
-	@ApiOperation(value = "Retrieve all available roles", notes = "Fetches a list of all available roles in the system.")
+	@ApiOperation(value = "Retrieve all available roles", notes = "Fetches a list of all available roles in the system. User with ADMIN and USER role can access this Api")
 	@ApiResponses(value = {
 	    @ApiResponse(code = 200, message = "All available roles fetched successfully"),
 	    @ApiResponse(code = 500, message = "Internal server error")
 	})
 	@PostMapping("/getAllAvailableRoles")
-	// @Secured("getallavailableroles") // Uncomment this line to enable role-based access control
+	@Secured({"ADMIN", "USER"})
 	public ResponseEntity<?> getAllAvailableRoles() {
 	    try {
 	        // Fetch a list of all available roles
@@ -206,7 +208,7 @@ public class RoleController {
 	    @ApiResponse(code = 500, message = "Internal server error")
 	})
 	@DeleteMapping("/deleteRole")
-	// @Secured("deleterole") // Uncomment this line to enable role-based access control
+	@Secured({"ADMIN"})
 	public ResponseEntity<?> deleteRole(@RequestBody Role role) {
 	    try {
 	        // Attempt to delete the role
