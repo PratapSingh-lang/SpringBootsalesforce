@@ -98,7 +98,7 @@ public class UserController {
 	@ApiOperation(value = "Fetch a list of all users", notes = "Returns a list of all users from the database. Only Admin users can access this API.")
 	@ApiResponses(value = { @ApiResponse(code = 200, message = "Users fetched successfully"),
 			@ApiResponse(code = 404, message = "No users found in the database") })
-	@GetMapping("/getallusers")
+	@PostMapping("/getallusers")
 	public ResponseEntity<?> getAllUsers() {
 		log.info("getAllUser method is called that willl return UserResponse Object List");
 		List<User> returnedUserList = userService.getAllUsersData();
