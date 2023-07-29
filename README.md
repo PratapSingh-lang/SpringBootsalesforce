@@ -14,7 +14,7 @@ This documentation provides details on how to set up and run the backend applica
 
 Follow these steps to set up and run the backend application:
 
-1. Clone the repository from GitHub: [git clone https://github.com/PratapSingh-lang/SpringBootsalesforce.git]: git clone https://github.com/PratapSingh-lang/SpringBootsalesforce.git
+1. Clone the repository from GitHub: git clone https://github.com/PratapSingh-lang/SpringBootsalesforce.git
 
 2. Navigate to the cloned repository: `cd SpringBootsalesforce`
 3. Install the required dependencies: `mvn install`
