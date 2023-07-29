@@ -45,17 +45,17 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
 	@Override
 	public AuthenticationResponse registerAdmin(@Valid RegisterRequest request) throws DataNotFoundException {
-
+ 
 		log.info(" Email during registration is : " + request.getEmail());
 		User user = buildUserObject(request);
 		User savedUser = userRepo.save(user);
 		Role findByRoleName = roleRepository.findByName(VariableConstants.ADMIN_ROLE);
 		User addedRoleToUser;
 		if (findByRoleName == null) {
-			Role role = new Role();
+			Role role = new Role(); 
 			role.setName(VariableConstants.ADMIN_ROLE);
 			role.setDescription(VariableConstants.ADMIN_ROLE_DESCRIPTION);
-
+ 
 			Role savedRole = roleRepository.save(role);
 			List<Long> roleId = new ArrayList<>();
 			roleId.add(savedRole.getId());
