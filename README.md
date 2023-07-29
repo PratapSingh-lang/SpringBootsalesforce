@@ -25,7 +25,7 @@ Follow these steps to set up and run the backend application:
 
 **API Endpoints**
 
--   Open Swagger UI to get Api endpoints on http://localhost:7777/swagger-ui.html
+-  After running the application, open Swagger UI to get Api endpoints on http://localhost:7777/swagger-ui.html
 
 **Authentication**
 
