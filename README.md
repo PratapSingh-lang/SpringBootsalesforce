@@ -22,5 +22,5 @@ Follow these steps to set up and run the backend application:
 4. Configure the database settings in `application.properties` file.
 4. Build the application: `mvn clean package`
 5. Run the application: `java -jar target/CodingTech-0.0.1-SNAPSHOT.jar`
-6. The backend application will now be running on `http://localhost:7777/`
-7. Open Swagger UI on `http://localhost:7777/swagger-ui.html` 
+6. The backend application will now be running on `http://localhost:7777`
+7. Open Swagger UI on http://localhost:7777/swagger-ui.html
