@@ -8,6 +8,8 @@ import java.security.NoSuchAlgorithmException;
 import java.security.cert.CertificateException;
 import java.util.HashMap;
 import java.util.Map;
+import org.springframework.beans.factory.annotation.Value;
+
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -22,6 +24,7 @@ import org.springframework.util.MimeTypeUtils;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -61,7 +64,10 @@ public class AuthenticationController {
 
 	private final AuthenticationService authenticationService;
 	private final JwtService jwtService;
-	
+
+	@Value("${server.port}")
+	private String port;
+
 	
 	/**
 	 * Refreshes the JWT token.
@@ -227,5 +233,11 @@ public class AuthenticationController {
 			return ResponseEntity.ok(authenticationService.authenticate(request));
 		
 	}
+	
+    @GetMapping()
+    public ResponseEntity<?> ping(){
+    	return new ResponseEntity<>("Hi , I am running at port : " + port, HttpStatus.OK);
+    }
+
 	
 }

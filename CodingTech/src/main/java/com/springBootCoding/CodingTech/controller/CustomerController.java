@@ -31,12 +31,12 @@ import io.swagger.annotations.ApiResponses;
 public class CustomerController {
 
 	private final CustomerService customerService;
-
+	
     @Autowired
     public CustomerController(CustomerService customerService) {
         this.customerService = customerService;
     }
-
+    
     /**
      * Creates a new customer.
      *
